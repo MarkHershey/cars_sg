@@ -1,23 +1,24 @@
-from tabula import read_pdf
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
+from tabula import read_pdf
 
 
 def read_from_pdf():
-    dfs = read_pdf("MVP01-6_Cars_by_make.pdf", pages="all")
+    # dfs = read_pdf("MVP01-6_Cars_by_make.pdf", pages="all")
+    dfs = read_pdf("MVP01-6_Cars_by_make_2013-2023.pdf", pages="all")
     df = pd.concat(dfs)  # concat all pages
     df.reset_index(drop=True, inplace=True)  # reset index
     df = df[:-1]  # remove the last row
-    df.to_csv("cars.csv")  # save to csv
+    df.to_csv("cars_2023.csv")  # save to csv
     return
 
 
 def main():
     df = pd.read_csv("cars.csv", index_col=0)
-    df.sort_values(by="2021", inplace=True, ascending=False)
+    df.sort_values(by="2023", inplace=True, ascending=False)
     df = df[df["Make"] != "TOTAL"]
-    df = df[df["2021"] != 0]
-    df = df[df["2021"].notna()]
+    df = df[df["2023"] != 0]
+    df = df[df["2023"].notna()]
     df.reset_index(drop=True, inplace=True)
     df.to_csv("cars_sorted.csv")
     return
@@ -101,6 +102,8 @@ MAKES = [
 def yearly_increase():
     df = pd.read_csv("cars_sorted.csv", index_col=0)
     # df = df[df["Make"].isin(MAKES)]
+    df["2023"] = df["2023"] - df["2022"]
+    df["2022"] = df["2022"] - df["2021"]
     df["2021"] = df["2021"] - df["2020"]
     df["2020"] = df["2020"] - df["2019"]
     df["2019"] = df["2019"] - df["2018"]
@@ -118,5 +121,6 @@ def yearly_increase():
 
 
 if __name__ == "__main__":
-    main()
-    yearly_increase()
+    read_from_pdf()
+    # main()
+    # yearly_increase()
